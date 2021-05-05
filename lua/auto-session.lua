@@ -26,7 +26,9 @@ local defaultConf = {
   -- Root dir where sessions will be stored
   auto_session_root_dir = vim.fn.stdpath('data').."/sessions/",
   -- Enables/disables auto-session
-  auto_session_enabled = true
+  auto_session_enabled = true,
+  -- Do not load sessions when in these directories
+  auto_session_suppress_dirs = vim.g.auto_session_suppress_dirs or {}
 }
 
 -- Set default config on plugin load
@@ -108,7 +110,9 @@ end
 
 -- Saves the session, overriding if previously existing.
 function AutoSession.SaveSession(sessions_dir, auto)
-  if Lib.is_empty(sessions_dir) then
+  if Lib.suppress_session(AutoSession.conf.auto_session_suppress_dirs) then
+    return
+  elseif Lib.is_empty(sessions_dir) then
     sessions_dir = AutoSession.get_root_dir()
   else
     sessions_dir = Lib.append_slash(sessions_dir)
@@ -135,7 +139,7 @@ end
 
 -- This function avoids calling RestoreSession automatically when argv is not nil.
 function AutoSession.AutoRestoreSession(sessions_dir)
-  if is_enabled() then
+  if is_enabled() and not Lib.suppress_session(AutoSession.conf.auto_session_suppress_dirs) then
     if next(vim.fn.argv()) == nil then
       AutoSession.RestoreSession(sessions_dir)
     end

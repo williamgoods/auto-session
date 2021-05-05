@@ -38,6 +38,10 @@ local opts = {
   auto_session_root_dir = vim.fn.stdpath('data').."/sessions/",
   -- Enables/disables auto save/restore
   auto_session_enabled = true
+  -- Do not load sessions when in these directories
+  auto_session_suppress_dirs = vim.g.auto_session_suppress_dirs or {}
+  -- e.g. suppress loading when in home directory:
+  -- auto_session_suppress_dirs = { '~' }
 }
 
 require('auto-session').setup(opts)
