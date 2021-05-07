@@ -97,17 +97,6 @@ function Lib.init_file(file_path)
   end
 end
 
-function Lib.suppress_session(suppress_dirs)
-  local cwd = vim.fn.getcwd()
-  for _, s in pairs(suppress_dirs) do
-    s = string.gsub(vim.fn.simplify(vim.fn.expand(s)), '/+$', '')
-    if cwd == s then
-      return true
-   end
-  end
-  return false
-end
-
 function Lib.escaped_session_name_from_cwd()
   local cwd = vim.fn.getcwd()
   return cwd:gsub("/", "\\%%")
