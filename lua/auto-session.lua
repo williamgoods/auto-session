@@ -311,7 +311,7 @@ end
 function AutoSession.AutoRestoreSession(sessions_dir)
   if is_enabled() and auto_restore() and not suppress_session() then
 		local curret_start = SelfLib:get_current_time()
-    AutoSession.RestoreSession(sessions_dir)
+    		AutoSession.RestoreSession(sessions_dir)
 
 		vim.api.nvim_command("Bdelete hidden")
 		local current_end = SelfLib:get_current_time()
