@@ -230,7 +230,7 @@ function AutoSession.AutoSaveSession(sessions_dir)
 
 	--{
 	--  first = 1(default: 1, after first load, this will be 0),
-	--  prevous_speed = number(default: 500ms),
+	--  previous_speed = number(default: 500ms),
 	--  buffers_size = size,
 	--}
 
@@ -243,7 +243,7 @@ function AutoSession.AutoSaveSession(sessions_dir)
 	if not speed_config then
 		local speed = {
 			first = 1,
-			prevous_speed = 500,
+			previous_speed = 500,
 			buffers_size = 1,
 		}
 
@@ -331,7 +331,7 @@ function AutoSession.AutoRestoreSession(sessions_dir)
 		speed_json["previous_speed"] = current_speed
 
 		SelfLib:FileOpration(speed_file, "w", function (filehandler)
-			filehandler:write(vim.fn.json.encode(speed_json))
+			filehandler:write(vim.fn.json_encode(speed_json))
 		end)
   end
 end
