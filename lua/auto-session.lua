@@ -1,4 +1,5 @@
 local Lib = require('auto-session-library')
+local SelfLib = require('self-session-library')
 
 -- Run comand hooks
 local function run_hook_cmds(cmds, hook_name)
@@ -201,6 +202,66 @@ function AutoSession.AutoSaveSession(sessions_dir)
 	  end
 	end
 	AutoSession.SaveSession(sessions_dir, true)
+
+	local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
+	local dir_ok, _ = SelfLib:exists(speed_dir)
+	print(speed_dir)
+	if not dir_ok then
+		os.execute("mkdir -p " .. speed_dir)
+	end
+
+	local speed_file = speed_dir .. "/speed"
+	local file_ok, _ = SelfLib:exists(speed_file)
+
+	if not file_ok then
+		os.execute("touch " .. speed_file)
+	end
+
+	local buffers_size = 0
+	local all_buffers = vim.api.nvim_list_bufs()
+	for _, value in ipairs(all_buffers) do
+		-- print("key: " .. key .. ", value: " .. value .. "\n")
+		print("lines: " .. tostring(vim.api.nvim_buf_line_count(value)) .. "\n")
+		buffers_size = buffers_size + vim.api.nvim_buf_line_count(value)
+	end
+
+	local buffers_size_k = (buffers_size - buffers_size % 1000) / 1000 + 1
+	print("buffers_size: " .. buffers_size_k .. "k")
+
+	--{
+	--  first = 1(default: 1, after first load, this will be 0),
+	--  prevous_speed = number(default: 500ms),
+	--  buffers_size = size,
+	--}
+
+	local speed_config = ""
+
+	SelfLib:FileOpration(speed_file, "r", function (filehandler)
+		speed_config = filehandler:read()
+	end)
+
+	if not speed_config then
+		local speed = {
+			first = 1,
+			prevous_speed = 500,
+			buffers_size = 1,
+		}
+
+		local speed_json = vim.fn.json_encode(speed)
+
+		SelfLib:FileOpration(speed_file, "w", function (filehandler)
+			filehandler:write(speed_json)
+		end)
+	else
+		local speed_decode = vim.fn.json_decode(speed_config)
+
+		speed_decode['buffers_size'] = buffers_size_k
+
+		local re_speed_config = vim.fn.json_encode(speed_decode)
+		SelfLib:FileOpration(speed_file, "w", function (filehandler)
+			filehandler:write(re_speed_config)
+		end)
+	end
   end
 end
 
@@ -248,7 +309,30 @@ end
 -- This function avoids calling RestoreSession automatically when argv is not nil.
 function AutoSession.AutoRestoreSession(sessions_dir)
   if is_enabled() and auto_restore() and not suppress_session() then
+		local curret_start = SelfLib:get_current_time()
     AutoSession.RestoreSession(sessions_dir)
+		local current_end = SelfLib:get_current_time()
+
+		local interval = current_end - curret_start
+
+		local speed_config = ""
+		local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
+		local speed_file = speed_dir .. "/speed"
+
+		SelfLib:FileOpration(speed_file, "r", function (filehandler)
+			speed_config = filehandler:read()
+		end)
+
+		local speed_json = vim.fn.json_decode(speed_config)
+
+		local previous_buffers_size = speed_json["buffers_size"]
+		local current_speed = interval / previous_buffers_size
+
+		speed_json["previous_speed"] = current_speed
+
+		SelfLib:FileOpration(speed_file, "w", function (filehandler)
+			filehandler:write(vim.fn.json.encode(speed_json))
+		end)
   end
 end
 
@@ -275,6 +359,7 @@ end
 -- Restores the session by sourcing the session file if it exists/is readable.
 function AutoSession.RestoreSession(sessions_dir_or_file)
   Lib.logger.debug("sessions dir or file", sessions_dir_or_file)
+
   local sessions_dir, session_file = extract_dir_or_file(sessions_dir_or_file)
 
   local restore = function(file_path, session_name)
