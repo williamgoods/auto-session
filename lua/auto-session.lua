@@ -205,7 +205,7 @@ function AutoSession.AutoSaveSession(sessions_dir)
 
 	local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
 	local dir_ok, _ = SelfLib:exists(speed_dir)
-	print(speed_dir)
+	-- print(speed_dir)
 	if not dir_ok then
 		os.execute("mkdir -p " .. speed_dir)
 	end
@@ -221,12 +221,12 @@ function AutoSession.AutoSaveSession(sessions_dir)
 	local all_buffers = vim.api.nvim_list_bufs()
 	for _, value in ipairs(all_buffers) do
 		-- print("key: " .. key .. ", value: " .. value .. "\n")
-		print("lines: " .. tostring(vim.api.nvim_buf_line_count(value)) .. "\n")
+		-- print("lines: " .. tostring(vim.api.nvim_buf_line_count(value)) .. "\n")
 		buffers_size = buffers_size + vim.api.nvim_buf_line_count(value)
 	end
 
 	local buffers_size_k = (buffers_size - buffers_size % 1000) / 1000 + 1
-	print("buffers_size: " .. buffers_size_k .. "k")
+	-- print("buffers_size: " .. buffers_size_k .. "k")
 
 	--{
 	--  first = 1(default: 1, after first load, this will be 0),
@@ -258,6 +258,7 @@ function AutoSession.AutoSaveSession(sessions_dir)
 		speed_decode['buffers_size'] = buffers_size_k
 
 		local re_speed_config = vim.fn.json_encode(speed_decode)
+
 		SelfLib:FileOpration(speed_file, "w", function (filehandler)
 			filehandler:write(re_speed_config)
 		end)
