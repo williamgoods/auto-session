@@ -336,6 +336,8 @@ function AutoSession.AutoRestoreSession(sessions_dir)
 		SelfLib:FileOpration(speed_file, "w", function (filehandler)
 			filehandler:write(vim.fn.json_encode(speed_json))
 		end)
+
+		vim.api.nvim_command("LspStop")
   end
 end
 
