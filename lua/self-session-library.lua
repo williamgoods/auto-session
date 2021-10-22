@@ -133,7 +133,7 @@ local function exists(file)
    return ok, err
 end
 
-function self_session_library:DelayStart()
+function self_session_library:DelayStart(callback)
 	local default_speed = {
 		first = 1,
 		previous_speed = 500,
@@ -158,7 +158,11 @@ function self_session_library:DelayStart()
 		speed = current_speed.buffers_size * current_speed.previous_speed
 	end
 
-	return speed
+
+	local timer = vim.loop.new_timer()
+	timer:start(speed, 0, vim.schedule_wrap(function()
+		callback()
+	end))
 end
 
 return self_session_library
