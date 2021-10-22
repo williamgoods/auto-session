@@ -116,4 +116,50 @@ function self_session_library:SaveSpeed()
 	end
 end
 
+local function FileOpration(filename, operation, filefunc)
+	local file = io.open(filename, operation)
+	filefunc(file)
+	file:close()
+end
+
+local function exists(file)
+   local ok, err, code = os.rename(file, file)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
+end
+
+function DelayStart()
+	local default_speed = {
+		first = 1,
+		previous_speed = 500,
+		buffers_size = 1,
+	}
+
+	local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
+	local speed_file = speed_dir .. "/speed"
+
+
+	local file_ok, _ = exists(speed_file)
+	local speed  = default_speed.buffers_size * default_speed.previous_speed
+
+	if file_ok then
+		local speed_json = ""
+
+		FileOpration(speed_file, "r", function (filehandler)
+			speed_json = filehandler:read()
+		end)
+
+		local current_speed = vim.fn.json_decode(speed_json)
+
+		speed = current_speed.buffers_size * current_speed.previous_speed
+	end
+
+	return speed
+end
+
 return self_session_library
