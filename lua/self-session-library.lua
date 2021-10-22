@@ -46,7 +46,7 @@ function self_session_library:RestoreSpeed(interval)
 		local previous_buffers_size = speed_json["buffers_size"]
 		local current_speed = interval / previous_buffers_size
 
-		speed_json["previous_speed"] = current_speed
+		speed_json["previous_speed"] = 	(speed_json["previous_speed"] + current_speed) / 2
 
 		self:FileOpration(speed_file, "w", function (filehandler)
 			filehandler:write(vim.fn.json_encode(speed_json))
