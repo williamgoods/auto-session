@@ -133,7 +133,7 @@ local function exists(file)
    return ok, err
 end
 
-local function DelayStart()
+function self_session_library:DelayStart()
 	local default_speed = {
 		first = 1,
 		previous_speed = 500,
