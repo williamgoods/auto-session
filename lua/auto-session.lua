@@ -439,6 +439,7 @@ function AutoSession.RestoreSession(sessions_dir_or_file)
 	local interval = current_end - curret_start
 
 	SelfLib:RestoreSpeed(interval)
+	vim.api.nvim_command("LspRestart")
 end
 
 local maybe_disable_autosave = function(session_name)
