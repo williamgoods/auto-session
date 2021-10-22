@@ -201,6 +201,8 @@ function AutoSession.AutoSaveSession(sessions_dir)
 	    return
 	  end
 	end
+
+	vim.api.nvim_command("LspStop")
 	AutoSession.SaveSession(sessions_dir, true)
 
 	-- local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
@@ -314,7 +316,7 @@ function AutoSession.AutoRestoreSession(sessions_dir)
   if is_enabled() and auto_restore() and not suppress_session() then
 		-- local curret_start = SelfLib:get_current_time()
     AutoSession.RestoreSession(sessions_dir)
-		vim.api.nvim_command("LspStop")
+		-- vim.api.nvim_command("LspStop")
 
 		-- vim.api.nvim_command("Bdelete hidden")
 		-- local current_end = SelfLib:get_current_time()
@@ -442,7 +444,6 @@ function AutoSession.RestoreSession(sessions_dir_or_file)
 	local interval = current_end - curret_start
 
 	SelfLib:RestoreSpeed(interval)
-	vim.api.nvim_command("LspRestart")
 end
 
 local maybe_disable_autosave = function(session_name)
