@@ -133,7 +133,7 @@ local function exists(file)
    return ok, err
 end
 
-function DelayStart()
+local function DelayStart()
 	local default_speed = {
 		first = 1,
 		previous_speed = 500,
@@ -142,7 +142,6 @@ function DelayStart()
 
 	local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
 	local speed_file = speed_dir .. "/speed"
-
 
 	local file_ok, _ = exists(speed_file)
 	local speed  = default_speed.buffers_size * default_speed.previous_speed
