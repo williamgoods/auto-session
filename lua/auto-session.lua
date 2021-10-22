@@ -295,6 +295,9 @@ end
 
 -- Saves the session, overriding if previously existing.
 function AutoSession.SaveSession(sessions_dir, auto)
+	-- save all buffers
+	vim.api.nvim_command("wa")
+
   Lib.logger.debug("==== SaveSession")
   local session_file_name = get_session_file_name(session_dir)
 
@@ -368,9 +371,6 @@ end
 -- TODO: make this more readable!
 -- Restores the session by sourcing the session file if it exists/is readable.
 function AutoSession.RestoreSession(sessions_dir_or_file)
-	-- save all buffers
-	vim.api.nvim_command("wa")
-
 	local curret_start = SelfLib:get_current_time()
 
 	Lib.logger.debug("sessions dir or file", sessions_dir_or_file)
