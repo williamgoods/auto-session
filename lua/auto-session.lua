@@ -312,17 +312,17 @@ end
 -- This function avoids calling RestoreSession automatically when argv is not nil.
 function AutoSession.AutoRestoreSession(sessions_dir)
   if is_enabled() and auto_restore() and not suppress_session() then
-		local curret_start = SelfLib:get_current_time()
-    		AutoSession.RestoreSession(sessions_dir)
-
-		vim.api.nvim_command("Bdelete hidden")
-		local current_end = SelfLib:get_current_time()
-
-		local interval = current_end - curret_start
-
-		SelfLib:RestoreSpeed(interval)
-
+		-- local curret_start = SelfLib:get_current_time()
+    AutoSession.RestoreSession(sessions_dir)
 		vim.api.nvim_command("LspStop")
+
+		-- vim.api.nvim_command("Bdelete hidden")
+		-- local current_end = SelfLib:get_current_time()
+
+		-- local interval = current_end - curret_start
+
+		-- SelfLib:RestoreSpeed(interval)
+
 		-- local speed_config = ""
 		-- local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
 		-- local speed_file = speed_dir .. "/speed"
@@ -366,7 +366,9 @@ end
 -- TODO: make this more readable!
 -- Restores the session by sourcing the session file if it exists/is readable.
 function AutoSession.RestoreSession(sessions_dir_or_file)
-  Lib.logger.debug("sessions dir or file", sessions_dir_or_file)
+	local curret_start = SelfLib:get_current_time()
+
+	Lib.logger.debug("sessions dir or file", sessions_dir_or_file)
 
   local sessions_dir, session_file = extract_dir_or_file(sessions_dir_or_file)
 
@@ -430,6 +432,13 @@ function AutoSession.RestoreSession(sessions_dir_or_file)
   else
     Lib.logger.error("Error while trying to parse session dir or file")
   end
+
+	vim.api.nvim_command("Bdelete hidden")
+	local current_end = SelfLib:get_current_time()
+
+	local interval = current_end - curret_start
+
+	SelfLib:RestoreSpeed(interval)
 end
 
 local maybe_disable_autosave = function(session_name)
