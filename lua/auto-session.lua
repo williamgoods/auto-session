@@ -203,6 +203,9 @@ function AutoSession.AutoSaveSession(sessions_dir)
 	end
 
 	vim.api.nvim_command("LspStop")
+	-- SelfLib:FileOpration("/home/williamgoods/message", "w", function (filehandler)
+		-- filehandler:write("now we are in auto save process")
+	-- end)
 	AutoSession.SaveSession(sessions_dir, true)
 
 	-- local speed_dir = vim.env.HOME .. "/.vim/neovim_speed" .. vim.fn.getcwd()
@@ -295,9 +298,7 @@ end
 
 -- Saves the session, overriding if previously existing.
 function AutoSession.SaveSession(sessions_dir, auto)
-	-- save all buffers
-	vim.api.nvim_command("wa")
-
+	-- os.execute("sleep " .. tonumber(5))
   Lib.logger.debug("==== SaveSession")
   local session_file_name = get_session_file_name(session_dir)
 
@@ -438,7 +439,7 @@ function AutoSession.RestoreSession(sessions_dir_or_file)
     Lib.logger.error("Error while trying to parse session dir or file")
   end
 
-	vim.api.nvim_command("Bdelete hidden")
+	-- vim.api.nvim_command("Bdelete hidden")
 	local current_end = SelfLib:get_current_time()
 
 	local interval = current_end - curret_start
